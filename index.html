@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f2f2f7">
+    <title>Учебный портал</title>
+    <style>
+        :root {
+            /* Светлая тема (iOS) */
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-main: #000000;
+            --text-secondary: #8e8e93;
+            --accent: #007aff;
+            --danger: #ff3b30;
+            --warning: #ff9500;
+            --success: #34c759;
+            --border: #e5e5ea;
+            --input-bg: #f2f2f7;
+            --blur-bg: rgba(242, 242, 247, 0.85);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Темная тема (iOS) */
+                --bg-color: #000000;
+                --card-bg: #1c1c1e;
+                --text-main: #ffffff;
+                --text-secondary: #8e8e93;
+                --accent: #0a84ff;
+                --danger: #ff453a;
+                --warning: #ff9f0a;
+                --success: #30d158;
+                --border: #38383a;
+                --input-bg: #2c2c2e;
+                --blur-bg: rgba(28, 28, 30, 0.85);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Стеклянный заголовок */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--blur-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: calc(env(safe-area-inset-top, 20px) + 10px) 20px 10px 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+        }
+
+        .container {
+            padding: 16px 16px 40px 16px;
+        }
+
+        /* Карточка дисциплины */
+        .course-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease;
+        }
+
+        .course-card summary {
+            padding: 16px 20px;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .course-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Иконка стрелочки (шеврон) */
+        .chevron {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            margin-left: 12px;
+            fill: var(--text-secondary);
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .course-card[open] .chevron {
+            transform: rotate(90deg);
+        }
+
+        .course-content {
+            padding: 0 16px 16px 16px;
+            border-top: 1px solid var(--border);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Задачи */
+        .task-list {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            padding: 14px;
+            position: relative;
+            border-left: 4px solid var(--accent);
+            transition: border-color 0.3s ease;
+        }
+
+        .task-item.safe { border-left-color: var(--success); }
+        .task-item.warning { border-left-color: var(--warning); }
+        .task-item.urgent { border-left-color: var(--danger); }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin: 0;
+            padding-right: 10px;
+            line-height: 1.3;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .task-due {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .task-timer {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-timer.warning { color: var(--warning); }
+        .task-timer.urgent { color: var(--danger); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Форма добавления */
+        .add-task-form {
+            margin-top: 16px;
+            background-color: var(--bg-color);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 4px;
+        }
+
+        .add-task-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            font-size: 16px; /* Важно: 16px предотвращает зум на iOS */
+            font-family: inherit;
+            -webkit-appearance: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-task-form input:focus {
+            border-color: var(--accent);
+        }
+
+        .add-task-form button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--accent);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .add-task-form button:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        /* Баннер уведомлений */
+        .notification-banner {
+            display: none;
+            background-color: var(--danger);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 500;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Кнопка сброса */
+        .reset-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin-top: 24px;
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            font-family: inherit;
+        }
+        
+        .reset-btn:active {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Мои дисциплины</h1>
+    </header>
+
+    <div class="container">
+        <div id="notification-banner" class="notification-banner">
+            ⚠️ Разрешите уведомления в настройках Safari для работы напоминаний!
+        </div>
+        <div id="app"></div>
+        <button class="reset-btn" onclick="resetData()">Сбросить все данные</button>
+    </div>
+
+    <script>
+        // Список предметов
+        const defaultCourses = [
+            "Алгоритмы и структуры данных_Экзамен (часть 2/2) [I.26-27] | Кафедра КБ-3",
+            "Введение в девопс_Зачет (часть 1/1) [I.26-27] | Кафедра КБ-3",
+            "Иностранный язык (английский) (часть 3/3) [I.26-27] Информационные технологии | Кафедра иностранных языков 1",
+            "Иностранный язык БРС (часть 2) [II.25-26] | Кафедра иностранных языков 1",
+            "Иностранный язык_Экзамен_БРС (часть 3/3) [I.26-27] | Кафедра иностранных языков 1",
+            "Инфокоммуникационные системы и сети_Экзамен (часть 1/1) [I.26-27] | Кафедра КБ-14 «Цифровые технологии обработки данных»",
+            "История России (часть 2/2) [II.25-26] | Кафедра гуманитарных и социальных наук",
+            "Математический анализ ФД_(часть 1/3) [I.25-26] | Кафедра высшей математики_ИКБ",
+            "Математический анализ_Экзамен (часть 3/3) [I.26-27] | Кафедра высшей математики_ИКБ",
+            "Методы и средства разработки компонент программного обеспечения_Экзамен (часть 1/2) [I.26-27] | Кафедра КБ-3",
+            "Олимпиада по фундаментальным дисциплинам | Орг вопросы",
+            "Операционные системы_Зачет (часть 1/1) [I.26-27] | Кафедра КБ-14",
+            "Правоведение_Зачет 2 курс (часть 1/1) [I.26-27] | Кафедра государственно-правовых дисциплин",
+            "Проектная практика (1/1) | Кафедра КБ-3",
+            "Системы искусственного интеллекта и большие данные_Зачет_ИКБ (часть 1/2) [I.26-27] | Кафедра информатики",
+            "Технологии программирования (КР/КП) | Кафедра КБ-14",
+            "Технологии программирования (часть 1/1) [II.25-26] | Кафедра КБ-14",
+            "Управление данными_Экзамен (часть 1/1) [I.26-27] | Кафедра КБ-9",
+            "Учебный отдел ИКБ | ИКБ",
+            "Физика (часть 2) [II.25-26] | Кафедра физики и технической механики",
+            "Физическая культура и спорт (элективная дисциплина) (часть 2/3) [I.26-27] | Кафедра Физического воспитания"
+        ];
+
+        // Инициализация данных
+        let appData = JSON.parse(localStorage.getItem('studyPortalData_v2')) || {};
+        
+        defaultCourses.forEach(course => {
+            if (!appData[course]) {
+                appData[course] = [];
+            }
+        });
+
+        // Запрос уведомлений
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) return;
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission !== "granted") {
+                        document.getElementById('notification-banner').style.display = 'block';
+                    }
+                });
+            } else if (Notification.permission === "denied") {
+                document.getElementById('notification-banner').style.display = 'block';
+            }
+        }
+
+        // Отправка уведомления
+        function sendNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
+                });
+            }
+        }
+
+        // Сохранение
+        function saveData() {
+            localStorage.setItem('studyPortalData_v2', JSON.stringify(appData));
+        }
+
+        // Сброс
+        function resetData() {
+            if (confirm("Вы уверены, что хотите удалить все добавленные задачи?")) {
+                localStorage.removeItem('studyPortalData_v2');
+                location.reload();
+            }
+        }
+
+        // Форматирование даты
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            let dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+            let timeStr = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            if (date.toDateString() === today.toDateString()) {
+                return `Сегодня в ${timeStr}`;
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return `Завтра в ${timeStr}`;
+            }
+            return `${dateStr} в ${timeStr}`;
+        }
+
+        // Рендер
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+
+            defaultCourses.forEach((course, index) => {
+                const tasks = appData[course] || [];
+                const details = document.createElement('details');
+                details.className = 'course-card';
+                
+                // Сохраняем состояние открытости
+                if (sessionStorage.getItem(`open_${index}`) === 'true') {
+                    details.open = true;
+                }
+                
+                details.addEventListener('toggle', () => {
+                    sessionStorage.setItem(`open_${index}`, details.open);
+                });
+
+                // Разделяем название кафедры и предмета для красоты
+                const parts = course.split('|');
+                const mainTitle = parts[0].trim();
+                const subTitle = parts.length > 1 ? parts[1].trim() : '';
+
+                details.innerHTML = `
+                    <summary>
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <span>${mainTitle}</span>
+                            ${subTitle ? `<span style="font-size:11px; font-weight:400; color:var(--text-secondary);">${subTitle}</span>` : ''}
+                        </div>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </summary>
+                `;
+
+                const content = document.createElement('div');
+                content.className = 'course-content';
+
+                const taskList = document.createElement('div');
+                taskList.className = 'task-list';
+
+                if (tasks.length === 0) {
+                    taskList.innerHTML = '<div class="empty-state">Нет добавленных работ 🎉</div>';
+                } else {
+                    tasks.sort((a, b) => new Date(a.due) - new Date(b.due));
+                    
+                    tasks.forEach(task => {
+                        const taskEl = document.createElement('div');
+                        taskEl.className = 'task-item';
+                        taskEl.id = `task-${task.id}`;
+                        taskEl.innerHTML = `
+                            <div class="task-header">
+                                <div class="task-title">${task.title}</div>
+                                <button class="delete-btn" onclick="deleteTask('${course.replace(/'/g, "\\'")}', '${task.id}')">Удалить</button>
+                            </div>
+                            <div class="task-due">Сдать до: ${formatDate(task.due)}</div>
+                            <div class="task-timer">Расчет...</div>
+                        `;
+                        taskList.appendChild(taskEl);
+                    });
+                }
+                content.appendChild(taskList);
+
+                // Форма добавления
+                const form = document.createElement('form');
+                form.className = 'add-task-form';
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    const titleInput = form.querySelector('input[type="text"]');
+                    const dateInput = form.querySelector('input[type="datetime-local"]');
+                    if(titleInput.value && dateInput.value) {
+                        addTask(course, titleInput.value, dateInput.value);
+                    }
+                };
+                
+                form.innerHTML = `
+                    <div class="form-group">
+                        <label>Название работы</label>
+                        <input type="text" placeholder="Например: Лабораторная №1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Дедлайн</label>
+                        <input type="datetime-local" required>
+                    </div>
+                    <button type="submit">Добавить задачу</button>
+                `;
+                content.appendChild(form);
+
+                details.appendChild(content);
+                app.appendChild(details);
+            });
+
+            updateTimers();
+        }
+
+        // Добавление задачи
+        function addTask(course, title, dueDate) {
+            const task = {
+                id: Date.now().toString(),
+                title: title,
+                due: dueDate,
+                notified3d: false,
+                notified1d: false
+            };
+            appData[course].push(task);
+            saveData();
+            render();
+        }
+
+        // Удаление задачи
+        function deleteTask(course, taskId) {
+            appData[course] = appData[course].filter(t => t.id !== taskId);
+            saveData();
+            render();
+        }
+
+        // Обновление таймеров
+        function updateTimers() {
+            const now = new Date().getTime();
+            document.querySelectorAll('.task-item').forEach(item => {
+                const timerEl = item.querySelector('.task-timer');
+                const due = new Date(item.querySelector('.task-due').textContent.replace('Сдать до: ', '')).getTime(); // Хак для получения даты
+                // В реальном приложении лучше хранить дату в data-атрибуте, но здесь используем ID
+            });
+
+            // Правильный подход через data-атрибуты
+            for (const course in appData) {
+                appData[course].forEach(task => {
+                    const taskEl = document.getElementById(`task-${task.id}`);
+                    if (!taskEl) return;
+
+                    const timerEl = taskEl.querySelector('.task-timer');
+                    const due = new Date(task.due).getTime();
+                    const diff = due - now;
+
+                    if (diff <= 0) {
+                        timerEl.textContent = "⏰ Время истекло!";
+                        timerEl.className = "task-timer urgent";
+                        taskEl.className = "task-item urgent";
+                    } else {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                        let timeText = "";
+                        let statusClass = "safe";
+
+                        if (days > 3) {
+                            timeText = `⏳ Осталось: ${days} дн.`;
+                            statusClass = "safe";
+                        } else if (days > 0) {
+                            timeText = `⏳ Осталось: ${days} д. ${hours} ч.`;
+                            statusClass = days === 1 ? "urgent" : "warning";
+                        } else {
+                            timeText = `🔥 Осталось: ${hours} ч. ${minutes} м. ${seconds} с.`;
+                            statusClass = "urgent";
+                        }
+
+                        timerEl.textContent = timeText;
+                        timerEl.className = `task-timer ${statusClass}`;
+                        taskEl.className = `task-item ${statusClass}`;
+                    }
+                });
+            }
+        }
+
+        // Проверка уведомлений
+        function checkNotifications() {
+            const now = new Date().getTime();
+            
+            for (const course in appData) {
+                appData[course].forEach(task => {
+                    const due = new Date(task.due).getTime();
+                    const diff = due - now;
+                    const daysLeft = diff / (1000 * 60 * 60 * 24);
+                    const shortCourseName = course.split('|')[0].trim();
+
+                    if (diff > 0) {
+                        if (daysLeft <= 3 && daysLeft > 1 && !task.notified3d) {
+                            sendNotification("Приближается дедлайн", `По предмету "${shortCourseName}" осталось 3 дня до сдачи: ${task.title}`);
+                            task.notified3d = true;
+                            saveData();
+                        }
+                        if (daysLeft <= 1 && !task.notified1d) {
+                            sendNotification("🚨 СРОЧНО! Остались сутки", `По предмету "${shortCourseName}" менее 24 часов до сдачи: ${task.title}`);
+                            task.notified1d = true;
+                            saveData();
+                        }
+                    }
+                });
+            }
+        }
+
+        // Инициализация
+        requestNotificationPermission();
+        render();
+        
+        setInterval(updateTimers, 1000);
+        setInterval(checkNotifications, 60000);
+        setTimeout(checkNotifications, 2000);
+    </script>
+</body>
+</html>
