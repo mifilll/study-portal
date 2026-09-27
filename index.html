@@ -9,7 +9,6 @@
     <title>Учебный портал</title>
     <style>
         :root {
-            /* Светлая тема (iOS) */
             --bg-color: #f2f2f7;
             --card-bg: #ffffff;
             --text-main: #000000;
@@ -25,7 +24,6 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Темная тема (iOS) */
                 --bg-color: #000000;
                 --card-bg: #1c1c1e;
                 --text-main: #ffffff;
@@ -55,7 +53,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Стеклянный заголовок */
         header {
             position: sticky;
             top: 0;
@@ -77,6 +74,43 @@
 
         .container {
             padding: 16px 16px 40px 16px;
+        }
+
+        /* Баннер уведомлений */
+        .notification-banner {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            animation: slideDown 0.3s ease;
+        }
+
+        .notification-banner p {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .notification-banner button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         /* Карточка дисциплины */
@@ -105,12 +139,57 @@
             display: none;
         }
 
-        /* Иконка стрелочки (шеврон) */
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .summary-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .summary-subtitle {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .summary-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .delete-course-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .delete-course-btn:active {
+            opacity: 1;
+        }
+
+        .delete-course-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--danger);
+        }
+
         .chevron {
             width: 12px;
             height: 12px;
             flex-shrink: 0;
-            margin-left: 12px;
             fill: var(--text-secondary);
             transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
@@ -241,7 +320,7 @@
             border: 1px solid var(--border);
             background-color: var(--card-bg);
             color: var(--text-main);
-            font-size: 16px; /* Важно: 16px предотвращает зум на iOS */
+            font-size: 16px;
             font-family: inherit;
             -webkit-appearance: none;
             outline: none;
@@ -271,43 +350,34 @@
             transform: scale(0.98);
         }
 
-        /* Баннер уведомлений */
-        .notification-banner {
-            display: none;
-            background-color: var(--danger);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            text-align: center;
-            font-weight: 500;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Кнопка сброса */
-        .reset-btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
+        /* Кнопки управления */
+        .management-buttons {
+            display: flex;
+            gap: 12px;
             margin-top: 24px;
+        }
+
+        .mgmt-btn {
+            flex: 1;
+            padding: 14px;
             background: transparent;
-            color: var(--danger);
-            border: none;
-            font-size: 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
             font-family: inherit;
+            color: var(--text-main);
+        }
+
+        .mgmt-btn.danger {
+            color: var(--danger);
+            border-color: var(--danger);
         }
         
-        .reset-btn:active {
-            opacity: 0.6;
+        .mgmt-btn:active {
+            background-color: var(--border);
         }
     </style>
 </head>
@@ -318,15 +388,22 @@
     </header>
 
     <div class="container">
+        <!-- Баннер для запроса уведомлений -->
         <div id="notification-banner" class="notification-banner">
-            ⚠️ Разрешите уведомления в настройках Safari для работы напоминаний!
+            <p>🔔 Чтобы получать напоминания о дедлайнах, разрешите уведомления.</p>
+            <button onclick="askNotificationPermission()">Включить уведомления</button>
         </div>
+
         <div id="app"></div>
-        <button class="reset-btn" onclick="resetData()">Сбросить все данные</button>
+
+        <div class="management-buttons">
+            <button class="mgmt-btn" onclick="restoreDefaultCourses()">Вернуть предметы</button>
+            <button class="mgmt-btn danger" onclick="resetData()">Удалить все задачи</button>
+        </div>
     </div>
 
     <script>
-        // Список предметов
+        // Список стандартных предметов
         const defaultCourses = [
             "Алгоритмы и структуры данных_Экзамен (часть 2/2) [I.26-27] | Кафедра КБ-3",
             "Введение в девопс_Зачет (часть 1/1) [I.26-27] | Кафедра КБ-3",
@@ -352,52 +429,110 @@
         ];
 
         // Инициализация данных
-        let appData = JSON.parse(localStorage.getItem('studyPortalData_v2')) || {};
+        let courses = JSON.parse(localStorage.getItem('studyCourses'));
+        if (!courses) {
+            courses = [...defaultCourses];
+            localStorage.setItem('studyCourses', JSON.stringify(courses));
+        }
+
+        let appData = JSON.parse(localStorage.getItem('studyPortalData_v3')) || {};
         
-        defaultCourses.forEach(course => {
+        // Убедимся, что для всех курсов есть массивы задач
+        courses.forEach(course => {
             if (!appData[course]) {
                 appData[course] = [];
             }
         });
 
-        // Запрос уведомлений
-        function requestNotificationPermission() {
+        // --- РАБОТА С УВЕДОМЛЕНИЯМИ (iOS PWA) ---
+        
+        // Регистрация Service Worker (обязательно для iOS)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker зарегистрирован'))
+                .catch(err => console.log('Ошибка Service Worker:', err));
+        }
+
+        // Проверка статуса разрешений
+        function checkNotificationStatus() {
             if (!("Notification" in window)) return;
-            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission !== "granted") {
-                        document.getElementById('notification-banner').style.display = 'block';
-                    }
-                });
+            
+            if (Notification.permission === "default") {
+                document.getElementById('notification-banner').style.display = 'block';
             } else if (Notification.permission === "denied") {
                 document.getElementById('notification-banner').style.display = 'block';
+                document.querySelector('#notification-banner p').textContent = "⚠️ Уведомления запрещены. Разрешите их в настройках iPhone (Настройки -> Safari -> Уведомления).";
+                document.querySelector('#notification-banner button').style.display = 'none';
+            } else {
+                document.getElementById('notification-banner').style.display = 'none';
             }
         }
 
-        // Отправка уведомления
+        // Запрос разрешения по кнопке (требование iOS)
+        function askNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("Ваш браузер не поддерживает уведомления");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                checkNotificationStatus();
+                if (permission === "granted") {
+                    alert("Отлично! Теперь вы будете получать уведомления о дедлайнах.");
+                }
+            });
+        }
+
+        // Отправка уведомления через Service Worker (работает на iOS)
         function sendNotification(title, body) {
-            if (Notification.permission === "granted") {
-                new Notification(title, {
-                    body: body,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
+            if (Notification.permission === "granted" && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>',
+                        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>',
+                        vibrate: [200, 100, 200]
+                    });
                 });
             }
         }
 
-        // Сохранение
+        // --- РАБОТА С ДАННЫМИ ---
+
         function saveData() {
-            localStorage.setItem('studyPortalData_v2', JSON.stringify(appData));
+            localStorage.setItem('studyPortalData_v3', JSON.stringify(appData));
         }
 
-        // Сброс
         function resetData() {
-            if (confirm("Вы уверены, что хотите удалить все добавленные задачи?")) {
-                localStorage.removeItem('studyPortalData_v2');
-                location.reload();
+            if (confirm("Вы уверены, что хотите удалить все добавленные задачи? Предметы останутся.")) {
+                appData = {};
+                courses.forEach(course => appData[course] = []);
+                saveData();
+                render();
             }
         }
 
-        // Форматирование даты
+        function restoreDefaultCourses() {
+            if (confirm("Восстановить стандартный список предметов? Добавленные вами задачи для них сохранятся.")) {
+                courses = [...defaultCourses];
+                localStorage.setItem('studyCourses', JSON.stringify(courses));
+                courses.forEach(course => {
+                    if (!appData[course]) appData[course] = [];
+                });
+                saveData();
+                render();
+            }
+        }
+
+        function deleteCourse(courseToDelete) {
+            if (confirm("Удалить этот предмет и все его задачи?")) {
+                courses = courses.filter(c => c !== courseToDelete);
+                localStorage.setItem('studyCourses', JSON.stringify(courses));
+                delete appData[courseToDelete];
+                saveData();
+                render();
+            }
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             const today = new Date();
@@ -415,17 +550,22 @@
             return `${dateStr} в ${timeStr}`;
         }
 
-        // Рендер
+        // --- ОТРИСОВКА ИНТЕРФЕЙСА ---
+
         function render() {
             const app = document.getElementById('app');
             app.innerHTML = '';
 
-            defaultCourses.forEach((course, index) => {
+            if (courses.length === 0) {
+                app.innerHTML = '<div class="empty-state" style="padding: 40px 0;">Список предметов пуст. Нажмите "Вернуть предметы" внизу.</div>';
+                return;
+            }
+
+            courses.forEach((course, index) => {
                 const tasks = appData[course] || [];
                 const details = document.createElement('details');
                 details.className = 'course-card';
                 
-                // Сохраняем состояние открытости
                 if (sessionStorage.getItem(`open_${index}`) === 'true') {
                     details.open = true;
                 }
@@ -434,20 +574,33 @@
                     sessionStorage.setItem(`open_${index}`, details.open);
                 });
 
-                // Разделяем название кафедры и предмета для красоты
                 const parts = course.split('|');
                 const mainTitle = parts[0].trim();
                 const subTitle = parts.length > 1 ? parts[1].trim() : '';
 
-                details.innerHTML = `
-                    <summary>
-                        <div style="display:flex; flex-direction:column; gap:2px;">
-                            <span>${mainTitle}</span>
-                            ${subTitle ? `<span style="font-size:11px; font-weight:400; color:var(--text-secondary);">${subTitle}</span>` : ''}
-                        </div>
+                // Шапка курса с кнопкой удаления
+                const summary = document.createElement('summary');
+                summary.innerHTML = `
+                    <div class="summary-content">
+                        <span class="summary-title">${mainTitle}</span>
+                        ${subTitle ? `<span class="summary-subtitle">${subTitle}</span>` : ''}
+                    </div>
+                    <div class="summary-actions">
+                        <button class="delete-course-btn" title="Удалить предмет">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
                         <svg class="chevron" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                    </summary>
+                    </div>
                 `;
+                
+                // Останавливаем всплытие события, чтобы клик по корзине не открывал карточку
+                summary.querySelector('.delete-course-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteCourse(course);
+                });
+
+                details.appendChild(summary);
 
                 const content = document.createElement('div');
                 content.className = 'course-content';
@@ -477,7 +630,6 @@
                 }
                 content.appendChild(taskList);
 
-                // Форма добавления
                 const form = document.createElement('form');
                 form.className = 'add-task-form';
                 form.onsubmit = (e) => {
@@ -509,7 +661,6 @@
             updateTimers();
         }
 
-        // Добавление задачи
         function addTask(course, title, dueDate) {
             const task = {
                 id: Date.now().toString(),
@@ -523,23 +674,15 @@
             render();
         }
 
-        // Удаление задачи
         function deleteTask(course, taskId) {
             appData[course] = appData[course].filter(t => t.id !== taskId);
             saveData();
             render();
         }
 
-        // Обновление таймеров
         function updateTimers() {
             const now = new Date().getTime();
-            document.querySelectorAll('.task-item').forEach(item => {
-                const timerEl = item.querySelector('.task-timer');
-                const due = new Date(item.querySelector('.task-due').textContent.replace('Сдать до: ', '')).getTime(); // Хак для получения даты
-                // В реальном приложении лучше хранить дату в data-атрибуте, но здесь используем ID
-            });
 
-            // Правильный подход через data-атрибуты
             for (const course in appData) {
                 appData[course].forEach(task => {
                     const taskEl = document.getElementById(`task-${task.id}`);
@@ -581,7 +724,6 @@
             }
         }
 
-        // Проверка уведомлений
         function checkNotifications() {
             const now = new Date().getTime();
             
@@ -609,7 +751,7 @@
         }
 
         // Инициализация
-        requestNotificationPermission();
+        checkNotificationStatus();
         render();
         
         setInterval(updateTimers, 1000);
