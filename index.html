@@ -18,8 +18,8 @@
             --warning: #ff9500;
             --success: #34c759;
             --border: #e5e5ea;
-            --blur-bg: rgba(242, 242, 247, 0.85);
-            --tab-bg: rgba(255, 255, 255, 0.9);
+            --blur-bg: rgba(255, 255, 255, 0.75);
+            --tab-bg: rgba(255, 255, 255, 0.65);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -33,248 +33,230 @@
                 --warning: #ff9f0a;
                 --success: #30d158;
                 --border: #38383a;
-                --blur-bg: rgba(28, 28, 30, 0.85);
-                --tab-bg: rgba(28, 28, 30, 0.9);
+                --blur-bg: rgba(28, 28, 30, 0.75);
+                --tab-bg: rgba(28, 28, 30, 0.65);
             }
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px));
+            margin: 0; padding: 0;
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px));
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
+        /* Заголовок */
         header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
             background-color: var(--blur-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: calc(env(safe-area-inset-top, 20px) + 10px) 20px 10px 20px;
             border-bottom: 1px solid var(--border);
-            text-align: center;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 44px;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-        }
+        header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
 
-        .container {
-            padding: 16px;
-            animation: fadeIn 0.3s ease;
-        }
+        /* Главные вкладки */
+        .view-container { padding: 16px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Нижнее меню (Табы) */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: calc(60px + env(safe-area-inset-bottom, 0px));
-            background-color: var(--tab-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            padding-top: 8px;
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            z-index: 1000;
-        }
-
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 50%;
-            gap: 4px;
-            font-family: inherit;
-            transition: color 0.2s;
-        }
-
-        .tab-item.active {
-            color: var(--accent);
-        }
-
-        .tab-item svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-
-        /* Карточка дисциплины */
+        /* ========== ЭКРАН ЗАДАЧ ========== */
         .course-card {
             background-color: var(--card-bg);
             border-radius: 16px;
-            margin-bottom: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .course-card summary {
+            margin-bottom: 12px;
             padding: 16px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             cursor: pointer;
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 15px;
-            font-weight: 600;
-            line-height: 1.3;
+            transition: transform 0.2s, background-color 0.2s;
         }
+        .course-card:active { transform: scale(0.98); background-color: var(--border); }
+        
+        .course-info { display: flex; flex-direction: column; gap: 4px; flex: 1; padding-right: 12px; }
+        .course-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+        .course-subtitle { font-size: 12px; color: var(--text-secondary); }
+        
+        .course-actions { display: flex; align-items: center; gap: 12px; }
+        .delete-course-btn { background: none; border: none; padding: 4px; cursor: pointer; opacity: 0.6; }
+        .delete-course-btn svg { width: 20px; height: 20px; fill: var(--danger); }
+        .chevron-right { width: 14px; height: 14px; fill: var(--text-secondary); }
 
-        .course-card summary::-webkit-details-marker { display: none; }
-
-        .summary-content { display: flex; flex-direction: column; gap: 2px; flex: 1; padding-right: 10px; }
-        .summary-title { font-size: 15px; font-weight: 600; }
-        .summary-subtitle { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
-        .summary-actions { display: flex; align-items: center; gap: 12px; }
-
-        .delete-course-btn {
-            background: none; border: none; padding: 4px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0.6; transition: opacity 0.2s;
-        }
-        .delete-course-btn:active { opacity: 1; }
-        .delete-course-btn svg { width: 18px; height: 18px; fill: var(--danger); }
-
-        .chevron {
-            width: 12px; height: 12px; flex-shrink: 0; fill: var(--text-secondary);
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-        .course-card[open] .chevron { transform: rotate(90deg); }
-
-        .course-content {
-            padding: 0 16px 16px 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        /* Задачи */
-        .task-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
-
-        .task-item {
-            background-color: var(--bg-color);
-            border-radius: 12px;
-            padding: 14px;
+        /* ========== ЭКРАН ПРОФИЛЯ (Telegram Style) ========== */
+        .profile-header {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
             position: relative;
-            border-left: 4px solid var(--accent);
-            transition: border-color 0.3s ease;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
+        .avatar-wrapper {
+            position: relative;
+            width: 100px; height: 100px;
+            margin: 0 auto 16px auto;
+        }
+
+        .avatar {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--bg-color);
+            border: 3px solid var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .avatar-edit-btn {
+            position: absolute; bottom: 0; right: 0;
+            background-color: var(--accent); border: 2px solid var(--card-bg);
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .avatar-edit-btn svg { width: 16px; height: 16px; fill: white; }
+
+        .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .profile-group { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+
+        .edit-profile-btn {
+            margin-top: 16px; background-color: var(--bg-color); color: var(--accent);
+            border: none; padding: 10px 24px; border-radius: 20px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+
+        .edit-fields { display: none; text-align: left; margin-top: 16px; }
+        .edit-fields input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+            background-color: var(--bg-color); color: var(--text-main);
+            font-size: 16px; margin-bottom: 10px; font-family: inherit;
+        }
+
+        /* ========== ОТДЕЛЬНОЕ ОКНО КУРСА ========== */
+        #course-detail-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); z-index: 2000;
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            display: flex; flex-direction: column;
+        }
+        #course-detail-view.active { transform: translateX(0); }
+
+        .detail-header {
+            position: sticky; top: 0; z-index: 10;
+            background-color: var(--blur-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: calc(env(safe-area-inset-top, 20px) + 10px) 16px 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+        }
+        .back-btn {
+            background: none; border: none; padding: 8px; cursor: pointer;
+            display: flex; align-items: center; color: var(--accent);
+        }
+        .back-btn svg { width: 22px; height: 22px; fill: var(--accent); }
+        .detail-title { flex: 1; font-size: 16px; font-weight: 600; text-align: center; padding-right: 38px; }
+
+        .detail-content { padding: 16px; overflow-y: auto; flex: 1; }
+
+        /* ========== ЗАДАЧИ (внутри курса) ========== */
+        .task-item {
+            background-color: var(--card-bg);
+            border-radius: 12px; padding: 14px; margin-bottom: 12px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+            transition: border-color 0.3s;
+        }
         .task-item.safe { border-left-color: var(--success); }
         .task-item.warning { border-left-color: var(--warning); }
         .task-item.urgent { border-left-color: var(--danger); }
-        .task-item.is-important { background-color: rgba(255, 149, 0, 0.05); }
+        .task-item.is-important { background-color: rgba(255, 149, 0, 0.08); }
 
         .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-        .task-title { font-weight: 600; font-size: 15px; margin: 0; padding-right: 10px; line-height: 1.3; flex: 1; }
-
-        .task-actions { display: flex; gap: 12px; align-items: center; }
+        .task-title { font-weight: 600; font-size: 15px; flex: 1; }
+        .task-actions { display: flex; gap: 10px; }
         
-        .star-btn {
-            background: none; border: none; padding: 0; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0.4; transition: opacity 0.2s, transform 0.2s;
-        }
-        .star-btn:active { transform: scale(1.2); }
+        .star-btn { background: none; border: none; padding: 0; cursor: pointer; opacity: 0.4; }
         .star-btn svg { width: 20px; height: 20px; fill: var(--text-secondary); }
         .star-btn.active { opacity: 1; }
         .star-btn.active svg { fill: var(--warning); }
 
-        .delete-btn {
-            background: none; border: none; color: var(--text-secondary);
-            font-size: 13px; font-weight: 500; padding: 0; cursor: pointer;
-        }
+        .delete-btn { background: none; border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer; }
 
-        .task-due { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
-        .task-timer { font-size: 14px; font-weight: 600; color: var(--success); display: inline-flex; align-items: center; gap: 4px; }
+        .task-due { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .task-timer { font-size: 14px; font-weight: 600; color: var(--success); }
         .task-timer.warning { color: var(--warning); }
         .task-timer.urgent { color: var(--danger); }
 
-        /* Профиль */
-        .profile-section {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        /* Форма добавления */
+        .add-task-form {
+            background-color: var(--card-bg); padding: 16px; border-radius: 16px; margin-top: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-
-        .profile-section h2 {
-            margin: 0 0 16px 0;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
-        .profile-section input {
+        .add-task-form input {
             width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border);
-            background-color: var(--bg-color); color: var(--text-main); font-size: 16px; font-family: inherit;
-            outline: none; transition: border-color 0.2s;
+            background-color: var(--bg-color); color: var(--text-main); font-size: 16px; font-family: inherit; outline: none;
         }
-        .profile-section input:focus { border-color: var(--accent); }
-
-        .important-task-card {
-            background-color: rgba(255, 149, 0, 0.1);
-            border-left: 4px solid var(--warning);
-            padding: 12px; border-radius: 8px; margin-bottom: 8px;
-        }
-        
-        .upcoming-task-card {
-            background-color: var(--bg-color);
-            padding: 12px; border-radius: 8px; margin-bottom: 8px;
-            border-left: 4px solid var(--accent);
+        .add-task-form button {
+            width: 100%; padding: 14px; border-radius: 10px; border: none;
+            background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit;
         }
 
-        .task-info-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-        .task-info-meta { font-size: 12px; color: var(--text-secondary); }
-        .task-info-course { font-size: 11px; color: var(--accent); margin-bottom: 2px; }
+        /* ========== НИЖНЕЕ МЕНЮ (Liquid Glass) ========== */
+        .tab-bar {
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 20px; right: 20px;
+            height: 64px;
+            background-color: var(--tab-bg);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
 
-        /* Кнопки управления */
-        .management-buttons { display: flex; gap: 12px; margin-top: 24px; }
-        .mgmt-btn {
-            flex: 1; padding: 14px; background: transparent; border: 1px solid var(--border);
-            border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
-            text-align: center; font-family: inherit; color: var(--text-main);
+        .tab-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: none; border: none; color: var(--text-secondary);
+            font-size: 10px; font-weight: 600; cursor: pointer;
+            width: 50%; height: 100%; gap: 4px;
+            font-family: inherit; transition: color 0.2s;
         }
-        .mgmt-btn.danger { color: var(--danger); border-color: var(--danger); }
-        
-        .notification-banner {
-            display: none; background-color: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        .tab-item.active { color: var(--accent); }
+        .tab-item svg { width: 24px; height: 24px; fill: currentColor; }
+
+        /* Всплывающее уведомление о сохранении */
+        #toast {
+            position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background-color: var(--success); color: white; padding: 8px 20px;
+            border-radius: 20px; font-size: 13px; font-weight: 600;
+            opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 3000;
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.4);
         }
-        .notification-banner p { margin: 0 0 12px 0; font-size: 14px; font-weight: 500; }
-        .notification-banner button {
-            background-color: var(--accent); color: white; border: none; padding: 10px 20px;
-            border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%;
-        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         .empty-state { text-align: center; padding: 24px 0; color: var(--text-secondary); font-size: 14px; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .section-title { font-size: 18px; font-weight: 700; margin: 24px 0 12px 0; }
+        
+        .important-task-card, .upcoming-task-card {
+            background-color: var(--card-bg); padding: 14px; border-radius: 12px; margin-bottom: 10px;
+        }
+        .important-task-card { border-left: 4px solid var(--warning); }
+        .upcoming-task-card { border-left: 4px solid var(--accent); }
+        .task-info-course { font-size: 11px; color: var(--accent); margin-bottom: 2px; font-weight: 600; }
+        .task-info-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .task-info-meta { font-size: 12px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
@@ -284,50 +266,53 @@
     </header>
 
     <!-- Вкладка ЗАДАЧИ -->
-    <div id="tasks-view" class="container">
-        <div id="notification-banner" class="notification-banner">
-            <p>Чтобы получать напоминания о дедлайнах, разрешите уведомления.</p>
-            <button onclick="askNotificationPermission()">Включить уведомления</button>
-        </div>
-
+    <div id="tasks-view" class="view-container">
         <div id="app"></div>
-
-        <div class="management-buttons">
-            <button class="mgmt-btn" onclick="restoreDefaultCourses()">Вернуть предметы</button>
-            <button class="mgmt-btn danger" onclick="resetData()">Удалить все задачи</button>
+        <div style="display:flex; gap:12px; margin-top:24px;">
+            <button style="flex:1; padding:14px; border-radius:12px; border:1px solid var(--border); background:transparent; color:var(--text-main); font-weight:600;" onclick="restoreDefaultCourses()">Вернуть предметы</button>
         </div>
     </div>
 
     <!-- Вкладка ПРОФИЛЬ -->
-    <div id="profile-view" class="container" style="display: none;">
-        <div class="profile-section">
-            <h2>Личные данные</h2>
-            <div class="form-group">
-                <label>Имя</label>
-                <input type="text" id="p-name" placeholder="Иван" onchange="saveProfile()">
+    <div id="profile-view" class="view-container" style="display: none;">
+        <div class="profile-header">
+            <div class="avatar-wrapper">
+                <img id="avatar-img" class="avatar" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e5e5ea'/><circle cx='50' cy='40' r='20' fill='%238e8e93'/><circle cx='50' cy='90' r='35' fill='%238e8e93'/></svg>" alt="Аватар">
+                <label class="avatar-edit-btn">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="file" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                </label>
             </div>
-            <div class="form-group">
-                <label>Фамилия</label>
-                <input type="text" id="p-surname" placeholder="Иванов" onchange="saveProfile()">
+            <div id="profile-display">
+                <div class="profile-name" id="display-name">Имя Фамилия</div>
+                <div class="profile-group" id="display-group">Группа</div>
+                <button class="edit-profile-btn" onclick="toggleEditProfile(true)">Редактировать</button>
             </div>
-            <div class="form-group">
-                <label>Группа</label>
-                <input type="text" id="p-group" placeholder="КБ-31" onchange="saveProfile()">
-            </div>
-        </div>
-
-        <div class="profile-section">
-            <h2>Важные задачи</h2>
-            <div id="important-tasks-list">
-                <!-- Сюда рендерятся важные задачи -->
+            <div class="edit-fields" id="profile-edit">
+                <input type="text" id="p-name" placeholder="Имя">
+                <input type="text" id="p-surname" placeholder="Фамилия">
+                <input type="text" id="p-group" placeholder="Группа">
+                <button class="edit-profile-btn" style="background:var(--accent); color:white; width:100%;" onclick="saveProfile()">Сохранить</button>
             </div>
         </div>
 
-        <div class="profile-section">
-            <h2>Ближайшие дедлайны</h2>
-            <div id="upcoming-tasks-list">
-                <!-- Сюда рендерятся все ближайшие задачи -->
-            </div>
+        <div class="section-title">Важные задачи</div>
+        <div id="important-tasks-list"></div>
+
+        <div class="section-title">Ближайшие дедлайны</div>
+        <div id="upcoming-tasks-list"></div>
+    </div>
+
+    <!-- ОТДЕЛЬНОЕ ОКНО КУРСА -->
+    <div id="course-detail-view">
+        <div class="detail-header">
+            <button class="back-btn" onclick="closeCourse()">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <div class="detail-title" id="detail-course-title">Предмет</div>
+        </div>
+        <div class="detail-content" id="detail-course-content">
+            <!-- Сюда рендерятся задачи конкретного курса -->
         </div>
     </div>
 
@@ -343,7 +328,10 @@
         </button>
     </nav>
 
+    <div id="toast">Сохранено</div>
+
     <script>
+        // ================= БАЗА ДАННЫХ =================
         const defaultCourses = [
             "Алгоритмы и структуры данных_Экзамен (часть 2/2) [I.26-27] | Кафедра КБ-3",
             "Введение в девопс_Зачет (часть 1/1) [I.26-27] | Кафедра КБ-3",
@@ -368,320 +356,335 @@
             "Физическая культура и спорт (элективная дисциплина) (часть 2/3) [I.26-27] | Кафедра Физического воспитания"
         ];
 
-        let courses = JSON.parse(localStorage.getItem('studyCourses')) || [...defaultCourses];
-        let appData = JSON.parse(localStorage.getItem('studyPortalData_v4')) || {};
-        let userProfile = JSON.parse(localStorage.getItem('studyUserProfile')) || { name: '', surname: '', group: '' };
+        // ЕДИНЫЙ СТАБИЛЬНЫЙ КЛЮЧ (больше не меняется)
+        const STORAGE_KEY = 'StudyApp_Data_Final_v1';
+        let state = {
+            currentTab: 'tasks',
+            currentCourse: null,
+            courses: [...defaultCourses],
+            data: {},
+            profile: { name: '', surname: '', group: '', avatar: null }
+        };
 
-        courses.forEach(course => { if (!appData[course]) appData[course] = []; });
-
-        // --- SERVICE WORKER & УВЕДОМЛЕНИЯ ---
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error:', err));
-        }
-
-        function checkNotificationStatus() {
-            if (!("Notification" in window)) return;
-            if (Notification.permission === "default" || Notification.permission === "denied") {
-                document.getElementById('notification-banner').style.display = 'block';
-                if (Notification.permission === "denied") {
-                    document.querySelector('#notification-banner p').textContent = "Уведомления запрещены. Разрешите их в настройках iPhone (Настройки -> Safari -> Уведомления).";
-                    document.querySelector('#notification-banner button').style.display = 'none';
-                }
-            } else {
-                document.getElementById('notification-banner').style.display = 'none';
+        // Загрузка
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state.courses = parsed.courses || [...defaultCourses];
+                    state.data = parsed.data || {};
+                    state.profile = parsed.profile || { name: '', surname: '', group: '', avatar: null };
+                } catch (e) { console.error('Ошибка загрузки', e); }
             }
+            state.courses.forEach(c => { if (!state.data[c]) state.data[c] = []; });
         }
 
-        function askNotificationPermission() {
-            Notification.requestPermission().then(() => checkNotificationStatus());
+        // Сохранение с визуальным подтверждением
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                courses: state.courses,
+                data: state.data,
+                profile: state.profile
+            }));
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1500);
         }
+
+        // ================= УВЕДОМЛЕНИЯ =================
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
         function sendNotification(title, body) {
             if (Notification.permission === "granted" && 'serviceWorker' in navigator) {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
-                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%23007aff"/><text x="50" y="70" font-size="60" text-anchor="middle" fill="white">У</text></svg>',
-                        vibrate: [200, 100, 200]
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%23007aff"/><text x="50" y="70" font-size="60" text-anchor="middle" fill="white">У</text></svg>'
                     });
                 });
             }
         }
 
-        // --- НАВИГАЦИЯ ---
+        // ================= НАВИГАЦИЯ =================
         function switchTab(tab) {
+            state.currentTab = tab;
             document.getElementById('tasks-view').style.display = tab === 'tasks' ? 'block' : 'none';
             document.getElementById('profile-view').style.display = tab === 'profile' ? 'block' : 'none';
-            
             document.getElementById('tab-tasks-btn').classList.toggle('active', tab === 'tasks');
             document.getElementById('tab-profile-btn').classList.toggle('active', tab === 'profile');
-            
             document.getElementById('page-title').textContent = tab === 'tasks' ? 'Задачи' : 'Профиль';
-
             if (tab === 'profile') renderProfile();
         }
 
-        // --- СОХРАНЕНИЕ ДАННЫХ ---
-        function saveData() { localStorage.setItem('studyPortalData_v4', JSON.stringify(appData)); }
+        function openCourse(course) {
+            state.currentCourse = course;
+            document.getElementById('detail-course-title').textContent = course.split('|')[0].trim();
+            renderCourseDetail(course);
+            document.getElementById('course-detail-view').classList.add('active');
+        }
+
+        function closeCourse() {
+            state.currentCourse = null;
+            document.getElementById('course-detail-view').classList.remove('active');
+            renderTasksList(); // Обновить список при возврате
+        }
+
+        // ================= ПРОФИЛЬ =================
+        function toggleEditProfile(show) {
+            document.getElementById('profile-display').style.display = show ? 'none' : 'block';
+            document.getElementById('profile-edit').style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('p-name').value = state.profile.name;
+                document.getElementById('p-surname').value = state.profile.surname;
+                document.getElementById('p-group').value = state.profile.group;
+            }
+        }
+
         function saveProfile() {
-            userProfile.name = document.getElementById('p-name').value;
-            userProfile.surname = document.getElementById('p-surname').value;
-            userProfile.group = document.getElementById('p-group').value;
-            localStorage.setItem('studyUserProfile', JSON.stringify(userProfile));
+            state.profile.name = document.getElementById('p-name').value;
+            state.profile.surname = document.getElementById('p-surname').value;
+            state.profile.group = document.getElementById('p-group').value;
+            saveData();
+            renderProfile();
+            toggleEditProfile(false);
         }
 
-        function resetData() {
-            if (confirm("Удалить все добавленные задачи? Предметы останутся.")) {
-                appData = {}; courses.forEach(c => appData[c] = []);
-                saveData(); renderTasks();
-            }
+        // Загрузка и сжатие аватара (чтобы не переполнить память)
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 200;
+                    let width = img.width, height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    state.profile.avatar = canvas.toDataURL('image/jpeg', 0.8);
+                    saveData();
+                    renderProfile();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
-        function restoreDefaultCourses() {
-            if (confirm("Восстановить стандартный список предметов?")) {
-                courses = [...defaultCourses]; localStorage.setItem('studyCourses', JSON.stringify(courses));
-                courses.forEach(c => { if (!appData[c]) appData[c] = []; });
-                saveData(); renderTasks();
-            }
-        }
-
-        function deleteCourse(courseToDelete) {
-            if (confirm("Удалить этот предмет и все его задачи?")) {
-                courses = courses.filter(c => c !== courseToDelete);
-                localStorage.setItem('studyCourses', JSON.stringify(courses));
-                delete appData[courseToDelete]; saveData(); renderTasks();
-            }
-        }
-
-        // --- ЛОГИКА ЗАДАЧ ---
+        // ================= ЛОГИКА ЗАДАЧ =================
         function formatDate(dateString) {
             const date = new Date(dateString);
-            const today = new Date();
-            const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+            const today = new Date(), tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
             let timeStr = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-
             if (date.toDateString() === today.toDateString()) return `Сегодня в ${timeStr}`;
             if (date.toDateString() === tomorrow.toDateString()) return `Завтра в ${timeStr}`;
             return `${date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })} в ${timeStr}`;
         }
 
         function toggleStar(course, taskId) {
-            const task = appData[course].find(t => t.id === taskId);
-            if (task) { task.isImportant = !task.isImportant; saveData(); renderTasks(); }
+            const task = state.data[course].find(t => t.id === taskId);
+            if (task) { task.isImportant = !task.isImportant; saveData(); renderCourseDetail(course); }
         }
 
         function addTask(course, title, dueDate) {
-            appData[course].push({ id: Date.now().toString(), title, due: dueDate, isImportant: false, notified3d: false, notified1d: false });
-            saveData(); renderTasks();
+            state.data[course].push({ id: Date.now().toString(), title, due: dueDate, isImportant: false, notified3d: false, notified1d: false });
+            saveData(); renderCourseDetail(course);
         }
 
         function deleteTask(course, taskId) {
-            appData[course] = appData[course].filter(t => t.id !== taskId);
-            saveData(); renderTasks();
+            state.data[course] = state.data[course].filter(t => t.id !== taskId);
+            saveData(); renderCourseDetail(course);
         }
 
-        // --- ОТРИСОВКА ЗАДАЧ ---
-        function renderTasks() {
+        function deleteCourse(courseToDelete) {
+            if (confirm("Удалить этот предмет и все его задачи?")) {
+                state.courses = state.courses.filter(c => c !== courseToDelete);
+                delete state.data[courseToDelete]; saveData(); renderTasksList();
+            }
+        }
+
+        function restoreDefaultCourses() {
+            if (confirm("Восстановить стандартный список предметов?")) {
+                state.courses = [...defaultCourses];
+                state.courses.forEach(c => { if (!state.data[c]) state.data[c] = []; });
+                saveData(); renderTasksList();
+            }
+        }
+
+        // ================= РЕНДЕРИНГ =================
+        function renderTasksList() {
             const app = document.getElementById('app');
             app.innerHTML = '';
-            if (courses.length === 0) { app.innerHTML = '<div class="empty-state">Список предметов пуст.</div>'; return; }
+            if (state.courses.length === 0) { app.innerHTML = '<div class="empty-state">Список предметов пуст.</div>'; return; }
 
-            courses.forEach((course, index) => {
-                const tasks = appData[course] || [];
-                const details = document.createElement('details');
-                details.className = 'course-card';
-                if (sessionStorage.getItem(`open_${index}`) === 'true') details.open = true;
-                details.addEventListener('toggle', () => sessionStorage.setItem(`open_${index}`, details.open));
-
+            state.courses.forEach(course => {
                 const parts = course.split('|');
-                const summary = document.createElement('summary');
-                summary.innerHTML = `
-                    <div class="summary-content">
-                        <span class="summary-title">${parts[0].trim()}</span>
-                        ${parts[1] ? `<span class="summary-subtitle">${parts[1].trim()}</span>` : ''}
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.onclick = () => openCourse(course);
+                card.innerHTML = `
+                    <div class="course-info">
+                        <div class="course-title">${parts[0].trim()}</div>
+                        <div class="course-subtitle">${parts[1] ? parts[1].trim() : ''}</div>
                     </div>
-                    <div class="summary-actions">
-                        <button class="delete-course-btn"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-                        <svg class="chevron" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    <div class="course-actions">
+                        <button class="delete-course-btn" onclick="event.stopPropagation(); deleteCourse('${course.replace(/'/g, "\\'")}')">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                        <svg class="chevron-right" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                     </div>
                 `;
-                summary.querySelector('.delete-course-btn').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); deleteCourse(course); });
-                details.appendChild(summary);
-
-                const content = document.createElement('div');
-                content.className = 'course-content';
-                const taskList = document.createElement('div');
-                taskList.className = 'task-list';
-
-                if (tasks.length === 0) {
-                    taskList.innerHTML = '<div class="empty-state">Нет добавленных работ</div>';
-                } else {
-                    tasks.sort((a, b) => new Date(a.due) - new Date(b.due));
-                    tasks.forEach(task => {
-                        const taskEl = document.createElement('div');
-                        taskEl.className = `task-item ${task.isImportant ? 'is-important' : ''}`;
-                        taskEl.id = `task-${task.id}`;
-                        taskEl.innerHTML = `
-                            <div class="task-header">
-                                <div class="task-title">${task.title}</div>
-                                <div class="task-actions">
-                                    <button class="star-btn ${task.isImportant ? 'active' : ''}" onclick="toggleStar('${course.replace(/'/g, "\\'")}', '${task.id}')">
-                                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    </button>
-                                    <button class="delete-btn" onclick="deleteTask('${course.replace(/'/g, "\\'")}', '${task.id}')">Удалить</button>
-                                </div>
-                            </div>
-                            <div class="task-due">Сдать до: ${formatDate(task.due)}</div>
-                            <div class="task-timer">Расчет...</div>
-                        `;
-                        taskList.appendChild(taskEl);
-                    });
-                }
-                content.appendChild(taskList);
-
-                const form = document.createElement('form');
-                form.className = 'add-task-form';
-                form.onsubmit = (e) => {
-                    e.preventDefault();
-                    const title = form.querySelector('input[type="text"]').value;
-                    const date = form.querySelector('input[type="datetime-local"]').value;
-                    if (title && date) addTask(course, title, date);
-                };
-                form.innerHTML = `
-                    <div class="form-group"><label>Название работы</label><input type="text" placeholder="Лабораторная №1" required></div>
-                    <div class="form-group"><label>Дедлайн</label><input type="datetime-local" required></div>
-                    <button type="submit">Добавить задачу</button>
-                `;
-                content.appendChild(form);
-                details.appendChild(content);
-                app.appendChild(details);
+                app.appendChild(card);
             });
+        }
+
+        function renderCourseDetail(course) {
+            const content = document.getElementById('detail-course-content');
+            content.innerHTML = '';
+            const tasks = state.data[course] || [];
+
+            if (tasks.length === 0) {
+                content.innerHTML = '<div class="empty-state">Нет добавленных работ</div>';
+            } else {
+                tasks.sort((a, b) => new Date(a.due) - new Date(b.due));
+                tasks.forEach(task => {
+                    const taskEl = document.createElement('div');
+                    taskEl.className = `task-item ${task.isImportant ? 'is-important' : ''}`;
+                    taskEl.id = `task-${task.id}`;
+                    taskEl.innerHTML = `
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-actions">
+                                <button class="star-btn ${task.isImportant ? 'active' : ''}" onclick="toggleStar('${course.replace(/'/g, "\\'")}', '${task.id}')">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </button>
+                                <button class="delete-btn" onclick="deleteTask('${course.replace(/'/g, "\\'")}', '${task.id}')">Удалить</button>
+                            </div>
+                        </div>
+                        <div class="task-due">Сдать до: ${formatDate(task.due)}</div>
+                        <div class="task-timer">Расчет...</div>
+                    `;
+                    content.appendChild(taskEl);
+                });
+            }
+
+            // Форма добавления
+            const form = document.createElement('form');
+            form.className = 'add-task-form';
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const title = form.querySelector('input[type="text"]').value;
+                const date = form.querySelector('input[type="datetime-local"]').value;
+                if (title && date) addTask(course, title, date);
+            };
+            form.innerHTML = `
+                <div class="form-group"><label>Название работы</label><input type="text" placeholder="Лабораторная №1" required></div>
+                <div class="form-group"><label>Дедлайн</label><input type="datetime-local" required></div>
+                <button type="submit">Добавить задачу</button>
+            `;
+            content.appendChild(form);
             updateTimers();
         }
 
-        // --- ОТРИСОВКА ПРОФИЛЯ ---
         function renderProfile() {
-            document.getElementById('p-name').value = userProfile.name || '';
-            document.getElementById('p-surname').value = userProfile.surname || '';
-            document.getElementById('p-group').value = userProfile.group || '';
+            document.getElementById('display-name').textContent = `${state.profile.name} ${state.profile.surname}`.trim() || 'Имя Фамилия';
+            document.getElementById('display-group').textContent = state.profile.group || 'Группа';
+            if (state.profile.avatar) document.getElementById('avatar-img').src = state.profile.avatar;
 
             const importantList = document.getElementById('important-tasks-list');
             const upcomingList = document.getElementById('upcoming-tasks-list');
-            importantList.innerHTML = '';
-            upcomingList.innerHTML = '';
+            importantList.innerHTML = ''; upcomingList.innerHTML = '';
 
             let allTasks = [];
-            for (const course in appData) {
-                appData[course].forEach(task => {
+            for (const course in state.data) {
+                state.data[course].forEach(task => {
                     allTasks.push({ ...task, courseName: course.split('|')[0].trim() });
                 });
             }
-            // Сортировка по дате
             allTasks.sort((a, b) => new Date(a.due) - new Date(b.due));
 
             const importantTasks = allTasks.filter(t => t.isImportant);
-            const upcomingTasks = allTasks.slice(0, 10); // Берем топ 10 ближайших
+            const upcomingTasks = allTasks.slice(0, 10);
 
-            if (importantTasks.length === 0) {
-                importantList.innerHTML = '<div class="empty-state">Нет важных задач</div>';
-            } else {
-                importantTasks.forEach(task => {
-                    const el = document.createElement('div');
-                    el.className = 'important-task-card';
-                    el.innerHTML = `
+            if (importantTasks.length === 0) importantList.innerHTML = '<div class="empty-state">Нет важных задач</div>';
+            else importantTasks.forEach(task => {
+                importantList.innerHTML += `
+                    <div class="important-task-card">
                         <div class="task-info-course">${task.courseName}</div>
                         <div class="task-info-title">${task.title}</div>
                         <div class="task-info-meta">Сдать до: ${formatDate(task.due)}</div>
-                    `;
-                    importantList.appendChild(el);
-                });
-            }
+                    </div>`;
+            });
 
-            if (upcomingTasks.length === 0) {
-                upcomingList.innerHTML = '<div class="empty-state">Нет ближайших дедлайнов</div>';
-            } else {
-                upcomingTasks.forEach(task => {
-                    const el = document.createElement('div');
-                    el.className = 'upcoming-task-card';
-                    el.innerHTML = `
+            if (upcomingTasks.length === 0) upcomingList.innerHTML = '<div class="empty-state">Нет ближайших дедлайнов</div>';
+            else upcomingTasks.forEach(task => {
+                upcomingList.innerHTML += `
+                    <div class="upcoming-task-card">
                         <div class="task-info-course">${task.courseName}</div>
                         <div class="task-info-title">${task.title} ${task.isImportant ? ' (Важное)' : ''}</div>
                         <div class="task-info-meta">Сдать до: ${formatDate(task.due)}</div>
-                    `;
-                    upcomingList.appendChild(el);
-                });
-            }
+                    </div>`;
+            });
         }
 
-        // --- ТАЙМЕРЫ И АВТО-ВАЖНОСТЬ ---
+        // ================= ТАЙМЕРЫ И АВТО-ВАЖНОСТЬ =================
         function updateTimers() {
             const now = new Date().getTime();
-            for (const course in appData) {
-                appData[course].forEach(task => {
-                    const taskEl = document.getElementById(`task-${task.id}`);
-                    if (!taskEl) return;
+            if (!state.currentCourse) return;
+            
+            state.data[state.currentCourse].forEach(task => {
+                const taskEl = document.getElementById(`task-${task.id}`);
+                if (!taskEl) return;
+                const timerEl = taskEl.querySelector('.task-timer');
+                const diff = new Date(task.due).getTime() - now;
 
-                    const timerEl = taskEl.querySelector('.task-timer');
-                    const due = new Date(task.due).getTime();
-                    const diff = due - now;
+                if (diff <= 0) {
+                    timerEl.textContent = "Время истекло";
+                    timerEl.className = "task-timer urgent";
+                    taskEl.className = "task-item urgent";
+                } else {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                    if (diff <= 0) {
-                        timerEl.textContent = "Время истекло";
-                        timerEl.className = "task-timer urgent";
-                        taskEl.className = "task-item urgent";
-                    } else {
-                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    let timeText = ""; let statusClass = "safe";
+                    if (days > 3) { timeText = `Осталось: ${days} дн.`; statusClass = "safe"; }
+                    else if (days > 0) { timeText = `Осталось: ${days} д. ${hours} ч.`; statusClass = days === 1 ? "urgent" : "warning"; }
+                    else { timeText = `Осталось: ${hours} ч. ${minutes} м. ${seconds} с.`; statusClass = "urgent"; }
 
-                        let timeText = ""; let statusClass = "safe";
-
-                        if (days > 3) {
-                            timeText = `Осталось: ${days} дн.`;
-                            statusClass = "safe";
-                        } else if (days > 0) {
-                            timeText = `Осталось: ${days} д. ${hours} ч.`;
-                            statusClass = days === 1 ? "urgent" : "warning";
-                        } else {
-                            timeText = `Осталось: ${hours} ч. ${minutes} м. ${seconds} с.`;
-                            statusClass = "urgent";
-                        }
-
-                        timerEl.textContent = timeText;
-                        timerEl.className = `task-timer ${statusClass}`;
-                        if (!taskEl.classList.contains('is-important')) {
-                            taskEl.className = `task-item ${statusClass}`;
-                        }
-                    }
-                });
-            }
+                    timerEl.textContent = timeText;
+                    timerEl.className = `task-timer ${statusClass}`;
+                    if (!taskEl.classList.contains('is-important')) taskEl.className = `task-item ${statusClass}`;
+                }
+            });
         }
 
-        // --- ПРОВЕРКА УВЕДОМЛЕНИЙ И АВТО-ВАЖНОСТИ ---
         function checkNotificationsAndAutoImportant() {
             const now = new Date().getTime();
             let dataChanged = false;
 
-            for (const course in appData) {
-                appData[course].forEach(task => {
-                    const due = new Date(task.due).getTime();
-                    const diff = due - now;
+            for (const course in state.data) {
+                state.data[course].forEach(task => {
+                    const diff = new Date(task.due).getTime() - now;
                     const daysLeft = diff / (1000 * 60 * 60 * 24);
                     const shortCourseName = course.split('|')[0].trim();
 
                     if (diff > 0) {
                         // Авто-важность (< 24 часов)
                         if (daysLeft <= 1 && !task.isImportant) {
-                            task.isImportant = true;
-                            dataChanged = true;
-                            // Обновляем визуально звезду, если мы на вкладке задач
-                            const starBtn = document.querySelector(`#task-${task.id} .star-btn`);
-                            if (starBtn) starBtn.classList.add('active');
-                            const taskEl = document.getElementById(`task-${task.id}`);
-                            if (taskEl) taskEl.classList.add('is-important');
+                            task.isImportant = true; dataChanged = true;
+                            if (state.currentCourse === course) {
+                                const starBtn = document.querySelector(`#task-${task.id} .star-btn`);
+                                if (starBtn) starBtn.classList.add('active');
+                                const taskEl = document.getElementById(`task-${task.id}`);
+                                if (taskEl) taskEl.classList.add('is-important');
+                            }
                         }
-
                         // Уведомления
                         if (daysLeft <= 3 && daysLeft > 1 && !task.notified3d) {
                             sendNotification("Приближается дедлайн", `По предмету "${shortCourseName}" осталось 3 дня: ${task.title}`);
@@ -695,17 +698,23 @@
                 });
             }
             if (dataChanged) saveData();
-            // Если открыт профиль, обновляем его
-            if (document.getElementById('profile-view').style.display === 'block') renderProfile();
+            if (state.currentTab === 'profile') renderProfile();
         }
 
-        // Инициализация
-        checkNotificationStatus();
-        renderTasks();
+        // ================= ИНИЦИАЛИЗАЦИЯ =================
+        loadData();
+        renderTasksList();
+        updateTimers();
         
         setInterval(updateTimers, 1000);
         setInterval(checkNotificationsAndAutoImportant, 60000);
         setTimeout(checkNotificationsAndAutoImportant, 2000);
+        
+        // Запрос уведомлений при первом клике
+        document.body.addEventListener('click', function askNotif() {
+            if (Notification.permission === "default") Notification.requestPermission();
+            document.body.removeEventListener('click', askNotif);
+        }, { once: true });
     </script>
 </body>
 </html>
